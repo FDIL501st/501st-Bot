@@ -1,15 +1,19 @@
 import nextcord
 from nextcord.ext import commands
+from dotenv import load_dotenv
+import os
+
+# load enviroment
+load_dotenv(".dev.env")
+
+# get TOKEN
+TOKEN = os.environ.get("TOKEN")
 
 #If there is an error, I won't know as the terminal will just shut down. VS code will show where issue is.
 intents = nextcord.Intents.default()
 intents.message_content = True
 
 bot = commands.Bot(command_prefix = './', intents=intents)
-
-#For safety reasons, I saved bot token in a txt file which I read from and save to TOKEN
-with open("TOKEN.txt", 'r') as f:
-    TOKEN = f.readline()
 
 @bot.event
 async def on_ready():
