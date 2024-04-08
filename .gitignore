@@ -2,4 +2,7 @@
 .env
 .dev.env
 
+# ignore pychache
+*/__pycache__/*
+*.pyc
 
