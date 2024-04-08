@@ -12,6 +12,7 @@ TOKEN = os.environ.get("TOKEN")
 #If there is an error, I won't know as the terminal will just shut down. VS code will show where issue is.
 intents = nextcord.Intents.default()
 intents.message_content = True
+intents.members = True
 
 bot = commands.Bot(command_prefix = './', intents=intents)
 
@@ -19,11 +20,13 @@ bot = commands.Bot(command_prefix = './', intents=intents)
 async def on_ready():
     print("Bot is ready.")
 
+# load the legacy cogs
 bot.load_extensions(
     names=[
-        "cogs.legacy.random_facts", 
-        "cogs.legacy.test"
-        ]
+        ".legacy.random_facts", 
+        ".legacy.test"
+        ],
+        package="cogs"
     )
 
 @bot.command()

@@ -41,11 +41,12 @@ class Legacy_Test(commands.Cog):
         self.users.remove(ctx.author.id)
      
     @commands.command()
+    @commands.is_owner()
     async def members(self, ctx:commands.Context):
         """Test command to check if I can access all members in a server."""
+        # works now after setting intents.members to True
         for member in ctx.guild.members:
             await ctx.send(str(member))
-            # Seem to print out 501st bot only
         async for member in ctx.guild.fetch_members():
             await ctx.send(str(member))
 
@@ -61,8 +62,11 @@ class Legacy_Test(commands.Cog):
     @commands.is_owner()
     async def guess2(self, ctx:commands.Context):
         """Attempt to calling a command from a different cog without using bot.get_command."""
-        game = Economy(self.bot)
-        await game.guess(ctx, attempts=5)
+        try:
+            game = Economy(self.bot)
+            await game.guess(ctx, attempts=5)
+        except:
+            await ctx.send("This command no longer works")
         # Was able to call a function from a different class
 
         # await game.guessing_game(context=ctx)
