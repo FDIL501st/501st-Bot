@@ -8,3 +8,6 @@
 
 # local dev stuff
 /service
+
+# ignore IDE
+/.idea

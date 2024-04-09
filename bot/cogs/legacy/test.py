@@ -1,35 +1,34 @@
 import math
 import nextcord
-from nextcord.ext import commands 
+from nextcord.ext import commands
 import random
 import asyncio
 
 
-class Legacy_Test(commands.Cog):   
+class Legacy_Test(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        #Lets me use bot. commands within my cog!
+        # Lets me use bot. commands within my cog!
 
         self.guilds: set[int] = set()
-        
 
     @commands.command()
     async def yourmom(self, ctx):
         """Command requested by deadpool."""
 
-        async def wait_type(ctx, message : str):
+        async def wait_type(ctx, message: str):
             """Helper function to send messages with pauses and typing within this command."""
             async with ctx.channel.typing():
                 await asyncio.sleep(5)
             await ctx.send(message)
-    
+
         if ctx.guild.id in self.guilds:
-            await ctx.send("Anti-spam measure initiated.\nOnly 1 use of this command per server.")
+            await ctx.send("Anti-spam measure initiated.\nOnly 1 use of this command per server at a time.")
             return
 
         self.guilds.add(ctx.guild.id)
 
-        # Acual command starts here
+        # Actual command starts here
         await ctx.send("Attempting to initiate bad joke...")
         for x in range(1, 4):
             await wait_type(ctx, f"Attempt {x}...")
@@ -38,15 +37,16 @@ class Legacy_Test(commands.Cog):
         await wait_type(ctx, "Reboot Failed.")
         await wait_type(ctx, "Bad joke unable to initialize.")
         await wait_type(ctx, "Termination sequence starting...")
-        for x in range(1,101):
-            y = format(50*math.log10(x), '.2f')
+        for x in range(1, 101):
+            y = format(50 * math.log10(x), '.2f')
             await wait_type(ctx, f"Termination sequence {y}% done...")
-        await wait_type(ctx, "Termination sequence successfully finished.\nThe bad joke has been terminated from the server.")
-        self.users.remove(ctx.author.id)
-     
+        await wait_type(ctx,
+                        "Termination sequence successfully finished.\nThe bad joke has been terminated from the server.")
+        self.guilds.remove(ctx.guild.id)
+
     @commands.command()
     @commands.is_owner()
-    async def members(self, ctx:commands.Context):
+    async def members(self, ctx: commands.Context):
         """Test command to check if I can access all members in a server."""
         # works now after setting intents.members to True
         for member in ctx.guild.members:
@@ -61,10 +61,10 @@ class Legacy_Test(commands.Cog):
         await command.__call__(ctx)
         await ctx.send("Other ping command.")
         # Calling of command was successful
-    
+
     @commands.command()
     @commands.is_owner()
-    async def guess2(self, ctx:commands.Context):
+    async def guess2(self, ctx: commands.Context):
         """Attempt to calling a command from a different cog without using bot.get_command."""
         try:
             game = Economy(self.bot)
@@ -78,7 +78,7 @@ class Legacy_Test(commands.Cog):
         # The # await above did not work due to argument issues
         # Only accepts context, however doesn't accepts arguments for the command itself
 
-    @commands.command(aliases = ["Ping"])
+    @commands.command(aliases=["Ping"])
     async def ping(self, ctx):
         """Shows ping/latency of connection bot has, 
         usually equivalent to FDIL's ping as his laptop runs the bot."""
@@ -88,29 +88,29 @@ class Legacy_Test(commands.Cog):
         else:
             await ctx.send(f"Bot is currently facing some pain. Its ping is : {ping}.")
 
-
-    @commands.command(aliases = ["8ball"])    #this section here is other names to call the command in discord other than method/function name
-    #Command that gives a random responce, no matter if a question is asked or not
-    async def __8ball__(self, ctx):  
+    @commands.command(aliases=["8ball"])
+    # aliases here is other names to call the command in discord other than method/function name
+    # Command that gives a random response, no matter if a question is asked or not
+    async def __8ball__(self, ctx):
         """An opensource command testing out discord.py/nextcord."""
-        #Took out question argument as I wasn't using it
+        # Took out question argument as I wasn't using it
 
         # responses are something I made up
         responces = ["Placeholder",
-                    "Of course, it totally true. Totally not being sarcastic here.",
-                    "Nothing ever is 100%, but at least the chance is not 0%",
-                    "Hello there, \nGeneral Kenobi",
-                    "So I think your chances are pretty high considering you got this message.",
-                    "What an unlucky bastard you are, getting this message signifies your lack of luck.",
-                    "Placeholder2?",
-                    "Placeholder4, where did Placeholder3 go?",
-                    "Placeholder PI, now we are using constants?? So decimals are fair game at counting a number of thing??? How does that makes sense? Is this where 3 went?",
-                    "So then, I'll give you a probabilty of 0.2.",
-                    "As you will realize, this is testing some simple codes about displaying a message. Not actually 8ball.",
-                    "There are a lot of filler messages, so your questions aren't actually being answered."]
-        await ctx.send(f"{random.choice(responces)}")   
+                     "Of course, it totally true. Totally not being sarcastic here.",
+                     "Nothing ever is 100%, but at least the chance is not 0%",
+                     "Hello there, \nGeneral Kenobi",
+                     "So I think your chances are pretty high considering you got this message.",
+                     "What an unlucky bastard you are, getting this message signifies your lack of luck.",
+                     "Placeholder2?",
+                     "Placeholder4, where did Placeholder3 go?",
+                     "Placeholder PI, now we are using constants?? So decimals are fair game at counting a number of thing??? How does that makes sense? Is this where 3 went?",
+                     "So then, I'll give you a probabilty of 0.2.",
+                     "As you will realize, this is testing some simple codes about displaying a message. Not actually 8ball.",
+                     "There are a lot of filler messages, so your questions aren't actually being answered."]
+        await ctx.send(f"{random.choice(responces)}")
 
-    @commands.command(aliases = ["alive", "hello"])
+    @commands.command(aliases=["alive", "hello"])
     async def Hello(self, ctx):
         """Simple command to test if the bot is online."""
         await ctx.send("Hello! The bot is indeed online right now.")
@@ -150,7 +150,7 @@ class Legacy_Test(commands.Cog):
             await ctx.send("Sending message to tell command worked.")
         except:
             await ctx.send("You used the command in the wrong server.")
-    
+
     @commands.command()
     async def embed(self, ctx):
         """Testing on making embeds with the bot."""
@@ -158,7 +158,7 @@ class Legacy_Test(commands.Cog):
         emb.add_field(name="Year", value="2020: \n 2021: ", inline=True)
         emb.add_field(name="__Creepypasta Winners__", value="seskran \n N/A", inline=True)
         emb.add_field(name="__Memepasta Winners__", value="N/A \n Gilbert", inline=True)
-        await ctx.send(embed = emb)
+        await ctx.send(embed=emb)
         #How to send a embed, 
         # there is a parameter called embed that you make your embed object equal to
 
