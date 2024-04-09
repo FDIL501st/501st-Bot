@@ -8,8 +8,10 @@ import asyncio
 class Legacy_Test(commands.Cog):   
     def __init__(self, bot):
         self.bot = bot
-        self.users = []
         #Lets me use bot. commands within my cog!
+
+        self.guilds: set[int] = set()
+        
 
     @commands.command()
     async def yourmom(self, ctx):
@@ -21,10 +23,12 @@ class Legacy_Test(commands.Cog):
                 await asyncio.sleep(5)
             await ctx.send(message)
     
-        if check_playing(ctx.author.id, self.users):
-            await ctx.send("Anti-spam measure initiated.\nOnly 1 use of this command per person at a time.")
+        if ctx.guild.id in self.guilds:
+            await ctx.send("Anti-spam measure initiated.\nOnly 1 use of this command per server.")
             return
-        self.users.append(ctx.author.id)
+
+        self.guilds.add(ctx.guild.id)
+
         # Acual command starts here
         await ctx.send("Attempting to initiate bad joke...")
         for x in range(1, 4):

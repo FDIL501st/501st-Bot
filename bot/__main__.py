@@ -9,7 +9,7 @@ load_dotenv(".dev.env")
 # get TOKEN
 TOKEN = os.environ.get("TOKEN")
 
-#If there is an error, I won't know as the terminal will just shut down. VS code will show where issue is.
+
 intents = nextcord.Intents.default()
 intents.message_content = True
 intents.members = True
@@ -23,10 +23,10 @@ async def on_ready():
 # load the legacy cogs
 bot.load_extensions(
     names=[
-        ".legacy.random_facts", 
-        ".legacy.test"
+        ".random_facts", 
+        ".test"
         ],
-        package="cogs"
+        package="cogs.legacy"
     )
 
 @bot.command()
