@@ -3,7 +3,7 @@ import nextcord
 from nextcord.ext import commands
 import random
 import asyncio
-
+from bot.shared.constants import CLUB_SERVER_ID
 UI = nextcord.ui
 
 
@@ -123,7 +123,7 @@ class Legacy_Test(commands.Cog):
         # Took out question argument as I wasn't using it
 
         # responses are something I made up
-        responces = ["Placeholder",
+        responses = ["Placeholder",
                      "Of course, it totally true. Totally not being sarcastic here.",
                      "Nothing ever is 100%, but at least the chance is not 0%",
                      "Hello there, \nGeneral Kenobi",
@@ -131,11 +131,13 @@ class Legacy_Test(commands.Cog):
                      "What an unlucky bastard you are, getting this message signifies your lack of luck.",
                      "Placeholder2?",
                      "Placeholder4, where did Placeholder3 go?",
-                     "Placeholder PI, now we are using constants?? So decimals are fair game at counting a number of thing??? How does that makes sense? Is this where 3 went?",
-                     "So then, I'll give you a probabilty of 0.2.",
-                     "As you will realize, this is testing some simple codes about displaying a message. Not actually 8ball.",
+                     "Placeholder PI, now we are using constants?? So decimals are fair game at counting a number of "
+                     "thing??? How does that makes sense? Is this where 3 went?",
+                     "So then, I'll give you a probability of 0.2.",
+                     "As you will realize, this is testing some simple codes about displaying a message. Not actually "
+                     "8ball.",
                      "There are a lot of filler messages, so your questions aren't actually being answered."]
-        await ctx.send(f"{random.choice(responces)}")
+        await ctx.send(f"{random.choice(responses)}")
 
     @commands.command(aliases=["alive", "hello"])
     async def Hello(self, ctx):
@@ -145,15 +147,15 @@ class Legacy_Test(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         try:
-            if message.guild.id == 790291109506973696:
+            if message.guild.id == CLUB_SERVER_ID:
                 # Any message sent to just you(hidden messages) don't have a guild association
                 # aka emphemeral message
                 # Errors when bot sends a hidden message as message.guild = None
-                if message.content == "Hello":
+                if message.content.lower() == "hello":
                     channel = message.guild.get_channel(message.channel.id)
                     # Don't use bot.get_channel(), won't find the channel
                     # message.guild gets guild the message is from, guild has method get_channel()
-                    await channel.send("Someone said hello in the club server.")
+                    await channel.send("{0} said hello in the club server.".format(message.author.global_name))
         except:
             pass
 

@@ -37,7 +37,7 @@ bot.load_extensions(
         ".random_facts",
         ".test"
     ],
-    package="cogs.legacy"
+    package="bot.cogs.legacy"
 )
 
 # load new cogs
@@ -46,7 +46,7 @@ bot.load_extensions(
         ".basic",
         ".calculator"
     ],
-    package="cogs"
+    package="bot.cogs"
 )
 
 
@@ -54,7 +54,7 @@ bot.load_extensions(
 @commands.is_owner()
 async def load(ctx: commands.Context, cog_name: str):
     """Putting in a cog"""
-    cog_path = "cogs." + cog_name
+    cog_path = "bot.cogs." + cog_name
     bot.load_extension(cog_path)
     await ctx.send(f"{cog_name} has been loaded.")
 
@@ -63,7 +63,7 @@ async def load(ctx: commands.Context, cog_name: str):
 @commands.is_owner()
 async def unload(ctx: commands.Context, cog_name: str):
     """Taking out a cog"""
-    cog_path = "cogs." + cog_name
+    cog_path = "bot.cogs." + cog_name
     bot.unload_extension(cog_path)
     await ctx.send(f"{cog_name} has been unloaded.")
 

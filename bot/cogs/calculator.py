@@ -1,7 +1,6 @@
 import nextcord
 from nextcord.ext import commands
-from asyncio import Event
-from .calculatorUI.calculatorMenu import CalculatorMenu
+from ..calculatorUI.calculatorMenu import CalculatorMenu
 
 
 class Calculator(commands.Cog):
