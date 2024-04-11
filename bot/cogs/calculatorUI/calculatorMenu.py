@@ -2,34 +2,37 @@ from typing import List
 from nextcord import ButtonStyle, Interaction, Embed
 import nextcord.ui as ui
 from nextcord.ui import View, Button
-from shared.MutableString import MutableString
+from asyncio import Event
 
 STYLE_BLURPLE: ButtonStyle = ButtonStyle.blurple
 
 
 class CalculatorInputButton(Button):
-    def __init__(self, label: str, row: int, equation: List[str], input_embed: Embed, command_interaction: Interaction):
+    def __init__(self, label: str, row: int, equation: List[str],
+                 input_embed: Embed, command_interaction: Interaction, event: Event):
         super().__init__(label=label, row=row, style=STYLE_BLURPLE)
         self.input: List[str] = equation
         self.embed: Embed = input_embed
         self.command_interaction: Interaction = command_interaction
+        self.event: Event = event
 
     async def callback(self, interaction: Interaction) -> None:
         self.input[0] += self.label
 
-        # below doesn't work as never show updated embed
+        # just update the embed in application,
+        # not actually display the update to discord server
         self.embed.set_field_at(0, name="", value=self.input)
-        # display updated embed
 
-        # issue, not allowed to edit within buttons, only components or modals
-        # await self.command_interaction.edit(embed=self.embed, view=self.view)
+        # set event to tell command it can continue
+        self.event.set()
 
 
 class CalculatorMenu(View):
-    def __init__(self, equation: List[str], input_embed: Embed, command_interaction: Interaction):
+    def __init__(self, equation: List[str], input_embed: Embed, command_interaction: Interaction, click_event: Event):
         super().__init__()
         self.command_interaction: Interaction = command_interaction
         self.input: List[str] = equation
+        self.event: Event = click_event
 
         # now add the calculator input buttons, layout similar to online calculators
 
@@ -37,58 +40,75 @@ class CalculatorMenu(View):
 
         self.add_item(CalculatorInputButton(label="0", row=4, input_embed=input_embed,
                                             equation=self.input,
-                                            command_interaction=command_interaction))
+                                            command_interaction=command_interaction,
+                                            event=click_event))
 
         self.add_item(CalculatorInputButton(label="1", row=3, input_embed=input_embed,
                                             equation=self.input,
-                                            command_interaction=command_interaction))
+                                            command_interaction=command_interaction,
+                                            event=click_event))
         self.add_item(CalculatorInputButton(label="2", row=3, input_embed=input_embed,
                                             equation=self.input,
-                                            command_interaction=command_interaction))
+                                            command_interaction=command_interaction,
+                                            event=click_event))
         self.add_item(CalculatorInputButton(label="3", row=3, input_embed=input_embed,
                                             equation=self.input,
-                                            command_interaction=command_interaction))
+                                            command_interaction=command_interaction,
+                                            event=click_event))
 
         self.add_item(CalculatorInputButton(label="4", row=2, input_embed=input_embed,
                                             equation=self.input,
-                                            command_interaction=command_interaction))
+                                            command_interaction=command_interaction,
+                                            event=click_event))
         self.add_item(CalculatorInputButton(label="5", row=2, input_embed=input_embed,
                                             equation=self.input,
-                                            command_interaction=command_interaction))
+                                            command_interaction=command_interaction,
+                                            event=click_event))
         self.add_item(CalculatorInputButton(label="6", row=2, input_embed=input_embed,
                                             equation=self.input,
-                                            command_interaction=command_interaction))
+                                            command_interaction=command_interaction,
+                                            event=click_event))
 
         self.add_item(CalculatorInputButton(label="7", row=1, input_embed=input_embed,
                                             equation=self.input,
-                                            command_interaction=command_interaction))
+                                            command_interaction=command_interaction,
+                                            event=click_event))
         self.add_item(CalculatorInputButton(label="8", row=1, input_embed=input_embed,
                                             equation=self.input,
-                                            command_interaction=command_interaction))
+                                            command_interaction=command_interaction,
+                                            event=click_event))
         self.add_item(CalculatorInputButton(label="9", row=1, input_embed=input_embed,
                                             equation=self.input,
-                                            command_interaction=command_interaction))
+                                            command_interaction=command_interaction,
+                                            event=click_event))
 
         # decimal point
         self.add_item(CalculatorInputButton(label=".", row=4, input_embed=input_embed,
                                             equation=self.input,
-                                            command_interaction=command_interaction))
+                                            command_interaction=command_interaction,
+                                            event=click_event))
 
         # operations on the right side
         self.add_item(CalculatorInputButton(label="+", row=4, input_embed=input_embed,
                                             equation=self.input,
-                                            command_interaction=command_interaction))
+                                            command_interaction=command_interaction,
+                                            event=click_event))
         self.add_item(CalculatorInputButton(label="-", row=3, input_embed=input_embed,
                                             equation=self.input,
-                                            command_interaction=command_interaction))
+                                            command_interaction=command_interaction,
+                                            event=click_event))
         self.add_item(CalculatorInputButton(label="*", row=2, input_embed=input_embed,
                                             equation=self.input,
-                                            command_interaction=command_interaction))
+                                            command_interaction=command_interaction,
+                                            event=click_event))
         self.add_item(CalculatorInputButton(label="/", row=1, input_embed=input_embed,
                                             equation=self.input,
-                                            command_interaction=command_interaction))
+                                            command_interaction=command_interaction,
+                                            event=click_event))
 
     # equal sign to stop, calculation done by command
     @ui.button(label="=", style=STYLE_BLURPLE, row=4)
-    async def equals(self, button: Button, interaction: Interaction):
+    async def equals(self, button: Button, interaction: Interaction) -> None:
         self.stop()
+        self.event.set()
+

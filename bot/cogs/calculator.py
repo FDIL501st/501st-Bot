@@ -1,5 +1,6 @@
 import nextcord
 from nextcord.ext import commands
+from asyncio import Event
 from .calculatorUI.calculatorMenu import CalculatorMenu
 
 
@@ -10,16 +11,31 @@ class Calculator(commands.Cog):
     @nextcord.slash_command()
     async def calculator(self, interaction: nextcord.Interaction):
         """Calculator"""
-        # current goal is to get the embed to be edited when
+
+        click_button_event: Event = Event()
+
         embed: nextcord.Embed = nextcord.Embed().add_field(name="", value="")
         equation: List[str] = [""]
         calculator_menu: CalculatorMenu = CalculatorMenu(equation=equation, input_embed=embed,
-                                                         command_interaction=interaction)
+                                                         command_interaction=interaction,
+                                                         click_event=click_button_event)
 
         await interaction.send(embed=embed, view=calculator_menu)
 
-        # at the moment, unable to view input being typed until press equal and get error
-        await calculator_menu.wait()
+        # need to be able to send some signal here to update, else stop
+
+        while True:
+            # reset flag to false, so have to wait for a button press
+            # this does nothing for first button press, however when coming back from loop
+            # this is needed to cause to wait again
+            click_button_event.clear()
+            # wait for a button to be clicked
+            await click_button_event.wait()
+
+            # if calculator_menu is finished,
+            # leave loop as can continue with evaluation
+            if calculator_menu.is_finished():
+                break
 
         # got the equation in equation[0], eval and return
         try:
