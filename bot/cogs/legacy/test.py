@@ -4,6 +4,33 @@ from nextcord.ext import commands
 import random
 import asyncio
 
+UI = nextcord.ui
+
+
+class ButtonOptions(nextcord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.value = None  # initialize label value here
+
+    @UI.button(label="Option 1", style=nextcord.ButtonStyle.blurple)
+    async def choice_1(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        await interaction.response.send_message("You chose Option 1", ephemeral=True)
+        # ephemeral = True makes message only visible to user.
+        self.value = 1  # a label to let u know which option was chosen for post button press action
+        self.stop()  # stops from registering another click on the button
+
+    @UI.button(label="Option 2", style=nextcord.ButtonStyle.blurple)
+    async def choice_2(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        await interaction.response.send_message("You chose Option 2", ephemeral=True)
+        self.value = 2
+        self.stop()
+
+    @UI.button(label="Option 3", style=nextcord.ButtonStyle.blurple)
+    async def choice_3(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        await interaction.response.send_message("You chose Option 3", ephemeral=True)
+        self.value = 3
+        self.stop()
+
 
 class Legacy_Test(commands.Cog):
     def __init__(self, bot):
@@ -119,13 +146,13 @@ class Legacy_Test(commands.Cog):
     async def on_message(self, message):
         try:
             if message.guild.id == 790291109506973696:
-                #Any message sent to just you(hidden messages) don't have a guild association
-                #aka emphemeral message
-                #Errors when bot sends a hidden message as message.guild = None
+                # Any message sent to just you(hidden messages) don't have a guild association
+                # aka emphemeral message
+                # Errors when bot sends a hidden message as message.guild = None
                 if message.content == "Hello":
                     channel = message.guild.get_channel(message.channel.id)
-                    #Don't use bot.get_channel(), won't find the channel
-                    #message.guild gets guild the message is from, guild has method get_channel()
+                    # Don't use bot.get_channel(), won't find the channel
+                    # message.guild gets guild the message is from, guild has method get_channel()
                     await channel.send("Someone said hello in the club server.")
         except:
             pass
@@ -133,10 +160,10 @@ class Legacy_Test(commands.Cog):
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         if payload.guild_id == 790291109506973696 and payload.channel_id == 866082676582252564:
-            #Need to somehow get a guild object, member has guild attribute and payload has member
-            #Need to use guild.get_channel as bot.get_channel doesn't work.
+            # Need to somehow get a guild object, member has guild attribute and payload has member
+            # Need to use guild.get_channel as bot.get_channel doesn't work.
             channel = payload.member.guild.get_channel(payload.channel_id)
-            #This worked!
+            # This worked!
             await channel.send(f"{payload.member.name} just reacted in {channel.name} with {payload.emoji.name}.")
 
     @commands.command()
@@ -159,8 +186,33 @@ class Legacy_Test(commands.Cog):
         emb.add_field(name="__Creepypasta Winners__", value="seskran \n N/A", inline=True)
         emb.add_field(name="__Memepasta Winners__", value="N/A \n Gilbert", inline=True)
         await ctx.send(embed=emb)
-        #How to send a embed, 
+        # How to send an embed,
         # there is a parameter called embed that you make your embed object equal to
+
+    @commands.command(aliases=["button"])
+    async def button_test(self, ctx):
+        view = ButtonOptions()
+        await ctx.send("This is a test command for buttons, choose an option.", view=view)
+
+        await view.wait()
+
+        if view.value is None:
+            print("No response.")
+
+        if view.value == 1:
+            com = self.bot.get_command("alive")
+            await com.__call__(ctx)
+
+        if view.value == 2:
+            com = self.bot.get_command("ping")
+            # Line above returns command,
+            # lets you take a command name and get a command object out of it
+            await com.__call__(ctx)
+            # .__call__() is a function of command class that lets you run the command.
+            # Be warned that is skips all checks so must give proper arguments
+
+        if view.value == 3:
+            await ctx.send("Congrats, you know how to press a button on discord.")
 
 
 def setup(bot):

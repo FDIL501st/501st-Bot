@@ -3,7 +3,7 @@
 .dev.env
 
 # ignore pychache
-*/__pycache__/*
+*/__pycache__/
 *.pyc
 
 # local dev stuff
