@@ -90,6 +90,15 @@ async def cog_errors(ctx: commands.Context, error: commands.errors):
     else:
         print(error)
 
+# command not found error handling
+# looking for when command_error event occurs in bot
+@bot.event
+async def on_command_error(ctx: commands.Context, error: commands.errors):
+    if isinstance(error, commands.errors.CommandNotFound):
+        await ctx.send("Command does not exist.")
+    else:
+        print(error)
+
 
 # About load and unload, name of class doesn't matter,
 # what matters is giving path to file that contains cog
