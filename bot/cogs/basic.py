@@ -1,5 +1,6 @@
 import nextcord
 from nextcord.ext import commands
+from bot.shared.constants import CLUB_SERVER_ID
 
 
 class Basic(commands.Cog):
@@ -26,6 +27,19 @@ class Basic(commands.Cog):
         """From nextcord docs
         Sends the content of the right-clicked message as an ephemeral response"""
         await interaction.response.send_message(message.content, ephemeral=True)
+
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        # the word we are listening for
+        word: str = "Zbeub"
+
+        if message.guild.id == CLUB_SERVER_ID and message.content == word:
+            channel = message.guild.get_channel(message.channel.id)
+            # Don't use bot.get_channel(), won't find the channel
+            # message.guild gets guild the message is from, guild has method get_channel()
+            await channel.send(
+                "I don't know what {0} means, but someone said it in the club server.".format(word)
+            )
 
 
 def setup(bot: commands.Bot):
