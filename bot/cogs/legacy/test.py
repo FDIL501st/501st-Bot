@@ -4,6 +4,7 @@ from nextcord.ext import commands
 import random
 import asyncio
 from bot.shared.constants import CLUB_SERVER_ID
+from bot.shared.checks import is_in_club_server
 UI = nextcord.ui
 
 
@@ -155,13 +156,13 @@ class Legacy_Test(commands.Cog):
                     channel = message.guild.get_channel(message.channel.id)
                     # Don't use bot.get_channel(), won't find the channel
                     # message.guild gets guild the message is from, guild has method get_channel()
-                    await channel.send("{0} said hello in the club server.".format(message.author.global_name))
+                    await channel.send("{0} said hello in the club server.".format(message.author.display_name))
         except:
             pass
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
-        if payload.guild_id == 790291109506973696 and payload.channel_id == 866082676582252564:
+        if payload.guild_id == CLUB_SERVER_ID and payload.channel_id == 866082676582252564:
             # Need to somehow get a guild object, member has guild attribute and payload has member
             # Need to use guild.get_channel as bot.get_channel doesn't work.
             channel = payload.member.guild.get_channel(payload.channel_id)
@@ -169,6 +170,7 @@ class Legacy_Test(commands.Cog):
             await channel.send(f"{payload.member.name} just reacted in {channel.name} with {payload.emoji.name}.")
 
     @commands.command()
+    @is_in_club_server()
     async def role(self, ctx):
         """Testing how to give a role"""
         """It seems first use id to get role object back,
@@ -181,6 +183,7 @@ class Legacy_Test(commands.Cog):
             await ctx.send("You used the command in the wrong server.")
 
     @commands.command()
+    @is_in_club_server()
     async def embed(self, ctx):
         """Testing on making embeds with the bot."""
         emb = nextcord.Embed(title="Red October Winners!")

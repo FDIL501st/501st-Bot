@@ -1,6 +1,7 @@
 import nextcord
 from nextcord.ext import commands
 from bot.shared.constants import CLUB_SERVER_ID
+from bot.shared.checks import is_in_club_server
 
 
 class Basic(commands.Cog):
