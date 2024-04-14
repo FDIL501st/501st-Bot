@@ -11,3 +11,6 @@
 
 # ignore IDE
 /.idea
+
+# ignore files generated during operation of bot
+*.csv

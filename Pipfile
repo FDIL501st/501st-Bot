@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 nextcord = "*"
 python-dotenv = "*"
+pandas = "*"
 
 [dev-packages]
 
