@@ -1,9 +1,9 @@
 from typing import List
 import nextcord
 from nextcord.ext import commands
-
-
-from bot.shared.exceptions import FirstAttachmentNotCSVError
+import pandas as pd
+from bot.shared.errors import FirstAttachmentNotCSVError
+from .statistic_functions import is_pair_data_statistically_same
 
 
 class PairDifferent(commands.Cog):
@@ -38,8 +38,9 @@ class PairDifferent(commands.Cog):
     @nextcord.message_command()
     async def is_pair_statistically_same(self, interaction: nextcord.Interaction, message: nextcord.Message) -> None:
         """
-        Given a message that has a csv file, and the csv file has 2 columns,
-        returns if both columns of data are statistically the same.
+        Given a message that has a csv file, and the csv file has a reader row and 2 columns,
+        returns if both columns of data are statistically the same using a 95% confidence interval.
+        At the moment the algorithm for this command needs fixing.
         """
 
         # check if have csv file as first attachment
@@ -53,9 +54,15 @@ class PairDifferent(commands.Cog):
         # now need to save file locally so can use it
         await message.attachments[0].save(PairDifferent.temp_file_path)
 
-        # for now as a placeholder, send the csv file we just saved
-        await interaction.send("Saved file",
-                               file=nextcord.File(PairDifferent.temp_file_path))
+        csv: pd.DataFrame = pd.read_csv(PairDifferent.temp_file_path)
+
+        result: bool = is_pair_data_statistically_same(csv)
+
+        if result:
+            await interaction.send("The paired data are statistically the same.")
+            return
+
+        await interaction.send("The paired data are not statistically the same.")
 
     # @commands.Cog.listener()
     # async def on_application_command_error(self, interaction: nextcord.Interaction, error: nextcord.ApplicationError):

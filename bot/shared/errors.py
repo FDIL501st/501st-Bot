@@ -18,7 +18,7 @@ class FirstAttachmentNotCSVError(BotException):
         super().__init__(message="First attachment of message used for command wasn't a csv with utf-8 charset.")
 
 
-class IncorrectCSVSizeError(BotException):
+class IncorrectCSVFormatError(BotException):
     """Exception for csv size is not expected."""
 
     def __init__(self, message: str):
