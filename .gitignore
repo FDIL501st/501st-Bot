@@ -13,4 +13,5 @@
 /.idea
 
 # ignore files generated during operation of bot
+/tmp
 *.csv

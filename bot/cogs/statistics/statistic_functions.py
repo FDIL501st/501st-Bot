@@ -23,17 +23,30 @@ def is_pair_data_statistically_same(df: pd.DataFrame) -> bool:
     diff_mean: float = df[diff].mean()
     diff_std: float = df[diff].std()  # use sample size correction version, where divide by n-1, not n
 
-    # need to determine if use t-test or z-test (# of rows <=30)
+    # need to determine if we use t-test or z-test (# of rows <=30)
     num_row: int = df.iloc[:, 0].size
 
     # use z-score for 95% confidence interval
-    z95: float = 1.96
+    score95: float = 1.96
 
-    diff_confidence_interval_lower: float = diff_mean - z95 * diff_std
-    diff_confidence_interval_upper: float = diff_mean + z95 * diff_std
+    # diff_confidence_interval_lower: float = diff_mean - z95 * diff_std
+    # diff_confidence_interval_upper: float = diff_mean + z95 * diff_std
+    # # now we check if 0 is within lower and upper bounds, inclusive
+    # if diff_confidence_interval_lower <= 0 <= diff_confidence_interval_upper:
+    #     return True
+    #
+    # return False
 
-    # now we check if 0 is within lower and upper bounds, inclusive
-    if diff_confidence_interval_lower <= 0 <= diff_confidence_interval_upper:
-        return True
+    # other option is to check if the distance of diff_mean to 0 is less than diff_mean to the bounds
+    # how it works is that 0 will be within the confidence interval
+    # if the distance between diff_mean and 0 is less than distance from diff_mean to the bounds
+    # this is one comparison as diff_mean is in center of the confidence interval bounds
 
-    return False
+    distance_diff_mean_to_zero: float = abs(diff_mean)
+    distance_diff_mean_to_bounds: float = score95*diff_std
+    if distance_diff_mean_to_zero > distance_diff_mean_to_bounds:
+        # check if 0 is out of bounds of confidence interval
+        return False
+
+    # assume statistically same even for case where 0 is one of the bounds
+    return True

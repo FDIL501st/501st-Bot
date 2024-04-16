@@ -10,7 +10,7 @@ class PairDifferent(commands.Cog):
     """Cog for commands related to finding if a pair of data are statistically the same or different."""
 
     temp_filename: str = "pair_diff.csv"
-    temp_file_path: str = "bot/temp/{}".format(temp_filename)
+    temp_file_path: str = "tmp/{}".format(temp_filename)
 
     def __init__(self, bot: commands.Bot):
         self.bot: commands.Bot = bot
@@ -57,12 +57,15 @@ class PairDifferent(commands.Cog):
         csv: pd.DataFrame = pd.read_csv(PairDifferent.temp_file_path)
 
         result: bool = is_pair_data_statistically_same(csv)
-
+        # overwrite csv and send back to user to see the column added, if they want to do their own calculation
+        csv.to_csv(PairDifferent.temp_file_path)
         if result:
-            await interaction.send("The paired data are statistically the same.")
+            await interaction.send("The paired data are statistically the same.",
+                                   file=nextcord.File(PairDifferent.temp_file_path))
             return
 
-        await interaction.send("The paired data are not statistically the same.")
+        await interaction.send("The paired data are not statistically the same.",
+                               file=nextcord.File(PairDifferent.temp_file_path))
 
     # @commands.Cog.listener()
     # async def on_application_command_error(self, interaction: nextcord.Interaction, error: nextcord.ApplicationError):
