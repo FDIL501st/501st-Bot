@@ -1,5 +1,6 @@
 from typing import Dict
 import pandas as pd
+import scipy.stats as stats
 from bot.shared.errors import IncorrectCSVFormatError
 
 
@@ -23,11 +24,16 @@ def is_pair_data_statistically_same(df: pd.DataFrame) -> bool:
     diff_mean: float = df[diff].mean()
     diff_std: float = df[diff].std()  # use sample size correction version, where divide by n-1, not n
 
-    # need to determine if we use t-test or z-test (# of rows <=30)
+    # need to determine if we use student t or z (# of rows <=30)
     num_row: int = df.iloc[:, 0].size
 
-    # use z-score for 95% confidence interval
-    score95: float = 1.96
+    if num_row > 30:
+        # use z-score 95% confidence interval
+        score95: float = 1.96
+
+    else:
+        # use students to for 95% confidence interval
+        score95: float = stats.t.ppf(0.975, num_row)
 
     # diff_confidence_interval_lower: float = diff_mean - z95 * diff_std
     # diff_confidence_interval_upper: float = diff_mean + z95 * diff_std
