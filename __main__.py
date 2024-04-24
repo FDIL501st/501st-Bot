@@ -1,28 +1,28 @@
 import nextcord
-from nextcord.ext import commands
+from nextcord.ext import commands, application_checks
 from dotenv import load_dotenv
 import os
 from bot.shared.errors import *
 
-load_dotenv(".env")
+# set intents, match ones set on discord
 
-DEV: bool = bool(os.environ.get("DEV"))
-
-if DEV:
-    # load the dev environment
-    load_dotenv(".dev.env")
-
-TOKEN: str = os.environ.get("TOKEN")
-
+# may not need these lines
 intents = nextcord.Intents.default()
 intents.message_content = True
 intents.members = True
 
-if DEV:
-    # TESTING_GUILD_ID, used to quickly get club server set up with slash commands
-    TESTING_GUILD_ID: int = int(os.environ.get("TESTING_GUILD_ID"))
+# load environment variables
+load_dotenv(".env")
+
+DEV: bool = bool(os.environ.get("DEV", "False"))
+TOKEN: str = os.environ.get("TOKEN")
+SINGLE_SERVER: bool = bool(os.environ.get("SINGLE_SERVER", "False"))
+
+if SINGLE_SERVER:
+    # SERVER_ID, used to quickly get club server set up with slash commands
+    SERVER_ID: int = int(os.environ.get("GUILD_ID"))
     # set for slash commands default server to register in the testing
-    bot: commands.Bot = commands.Bot(command_prefix='./', intents=intents, default_guild_ids=[TESTING_GUILD_ID])
+    bot: commands.Bot = commands.Bot(command_prefix='./', intents=intents, default_guild_ids=[SERVER_ID])
 else:
     # set slash commands for all servers (this takes some hours to register)
     bot: commands.Bot = commands.Bot(command_prefix='./', intents=intents)
@@ -102,11 +102,24 @@ async def cog_errors(ctx: commands.Context, error: commands.errors):
         print(error)
 
 
+# slash command version of load, unload and refresh
+@bot.slash_command()
+@application_checks.is_owner()
+async def refresh(interaction: nextcord.Interaction, cog_name: str):
+    """
+    Unloads, then loads a cog.
+    Slash command version of ./refresh
+    """
+    await interaction.send("At this moment, the command does nothing.")
+
+
 # command not found error handling
 # looking for when command_error event occurs in bot
 @bot.event
 async def on_command_error(ctx: commands.Context, error: commands.errors):
-    print("In on_command_error, caught exception of type: {0}".format(type(error)))
+    if DEV:
+        print("In on_command_error, caught exception of type: {0}\n".format(type(error)))
+
     if isinstance(error, commands.errors.CommandNotFound):
         await ctx.send("Command does not exist.")
     else:
@@ -116,7 +129,12 @@ async def on_command_error(ctx: commands.Context, error: commands.errors):
 # catching any uncaught application command error handling
 @bot.event
 async def on_application_command_error(interaction: nextcord.Interaction, error: nextcord.ApplicationError):
-    print("In on_application_command_error, caught exception of type: {0}".format(type(error)))
+    if DEV:
+        print("In on_application_command_error, caught exception of type: {0}\n".format(type(error)))
+
+    if isinstance(error, application_checks.ApplicationNotOwner):
+        await interaction.send("Only the bot owner is allowed to run this command.")
+        return
 
     if not isinstance(error, nextcord.ApplicationInvokeError):
         print(error)
