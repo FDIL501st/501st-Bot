@@ -92,11 +92,21 @@ async def refresh(ctx: commands.Context, cog_name: str):
 @load.error
 @unload.error
 async def cog_errors(ctx: commands.Context, error: commands.errors):
-    if isinstance(error, commands.errors.ExtensionAlreadyLoaded):
+    if not isinstance(error, commands.CommandInvokeError):
+        return
+
+    # this only handles error occurring during command
+
+    e: Exception = error.original
+
+    if DEV:
+        print("In cog_errors, caught exception of type {}".format(type(e)))
+
+    if isinstance(e, commands.ExtensionAlreadyLoaded):
         await ctx.send("The extension is already loaded.")
-    if isinstance(error, commands.errors.ExtensionNotLoaded):
+    if isinstance(e, commands.ExtensionNotLoaded):
         await ctx.send("The extension is not loaded.")
-    if isinstance(error, commands.errors.ExtensionNotFound):
+    if isinstance(e, commands.ExtensionNotFound):
         await ctx.send("Extension not found.")
     else:
         print(error)
@@ -117,8 +127,12 @@ async def refresh(interaction: nextcord.Interaction, cog_name: str):
 # looking for when command_error event occurs in bot
 @bot.event
 async def on_command_error(ctx: commands.Context, error: commands.errors):
+    # commandInvokeErrors should be caught by command error handlers
+    if isinstance(error, commands.CommandInvokeError):
+        return
+
     if DEV:
-        print("In on_command_error, caught exception of type: {0}\n".format(type(error)))
+        print("In on_command_error, caught exception of type: {0}".format(type(error)))
 
     if isinstance(error, commands.errors.CommandNotFound):
         await ctx.send("Command does not exist.")
@@ -126,11 +140,14 @@ async def on_command_error(ctx: commands.Context, error: commands.errors):
         print(error)
 
 
+# it seems errors from commands are now similar to application commands part of commands.errors.CommandInvokeError
+# which has a variable which is the type of error called
+
 # catching any uncaught application command error handling
 @bot.event
 async def on_application_command_error(interaction: nextcord.Interaction, error: nextcord.ApplicationError):
     if DEV:
-        print("In on_application_command_error, caught exception of type: {0}\n".format(type(error)))
+        print("In on_application_command_error, caught exception of type: {0}".format(type(error)))
 
     if isinstance(error, application_checks.ApplicationNotOwner):
         await interaction.send("Only the bot owner is allowed to run this command.")

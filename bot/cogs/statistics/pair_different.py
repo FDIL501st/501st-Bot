@@ -5,6 +5,8 @@ import pandas as pd
 import scipy.stats as stats
 from bot.shared.errors import FirstAttachmentNotCSVError
 from bot.shared.errors import IncorrectCSVFormatError
+from bot.shared.errors import BotException
+from __main__ import DEV
 
 
 class PairDifferent(commands.Cog):
@@ -76,6 +78,59 @@ class PairDifferent(commands.Cog):
     #     print(error)
 
     # application command error from this cog will call this and the event in __main__.py
+
+    @commands.command(aliases=["is_pair_statistically_same", "ispairsame"])
+    async def is_pair_same(self, ctx: commands.Context) -> None:
+        """
+        Same as slash command is_pair_statistically_same.
+        A csv file attachment that has a header and 2 columns is required with the command.
+        Will send a message if the pair of data are statistically the same or not.
+        """
+        message: nextcord.Message = ctx.message
+
+        # check if have csv file as first attachment
+        if not PairDifferent.first_attachment_is_csv(message):
+            raise FirstAttachmentNotCSVError
+
+        # do same as the slash command
+
+        await message.attachments[0].save(PairDifferent.temp_file_path)
+
+        csv: pd.DataFrame = pd.read_csv(PairDifferent.temp_file_path)
+
+        result: bool = PairDifferent.is_pair_data_statistically_same(csv)
+        csv.to_csv(PairDifferent.temp_file_path)
+
+        # send a reply back, this part is different as no longer using an interaction to send message
+        # but a context
+
+        if result:
+            await ctx.send("The paired data are statistically the same.",
+                           file=nextcord.File(PairDifferent.temp_file_path))
+            return
+
+        await ctx.send("The paired data are not statistically the same.",
+                       file=nextcord.File(PairDifferent.temp_file_path))
+
+    # error handling of is_pair_same
+    @is_pair_same.error
+    async def is_pair_same_errors(self, ctx: commands.Context, error: commands.errors) -> None:
+        if not isinstance(error, commands.CommandInvokeError):
+            return
+
+        # this only handles error occurring during command
+
+        e: Exception = error.original
+
+        if DEV:
+            print("In is_pair_same error handler, caught exception of type: {0}".format(type(e)))
+
+        if isinstance(e, BotException):
+            await ctx.send(e.message)
+            return
+
+        # unexpected error, simply print and ignore it
+        print(error)
 
     @staticmethod
     def is_pair_data_statistically_same(df: pd.DataFrame) -> bool:
