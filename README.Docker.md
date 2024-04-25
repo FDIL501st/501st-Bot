@@ -2,7 +2,7 @@
 
 All the command used assume you are currently at the top level directory of this project. This is where the `Dockerfile`, `compose.yaml` and `__main__.py` is.
 
-### Enviroment variables
+### Environment variables
 This application requires some environment variables.
 
 #### The following is mandatory
@@ -13,7 +13,7 @@ This application requires some environment variables.
 - SINGLE_SERVER=False
 - GUILD_ID="111111111"
 
-These enviroment variables can be overridden if wanted.
+These environment variables can be overridden if wanted.
 Set `SINGLE_SERVER=True` and `GUILD_ID` to whatever is ID of the server you want the slash command to work in.
 
 The default option means the slash commands will work in all the servers it is in.
@@ -43,12 +43,12 @@ You can run `docker images` to check if you already have the image. If the bot s
 `docker build -t 501st-Bot:latest`
 
 #### Run command
-As previously mentioned, you will need to atleast pass TOKEN environment variable. Simpliest way is to have a .env file in the same directory as the Dockerfile.
+As previously mentioned, you will need to at least pass `TOKEN` environment variable. Simpliest way is to have a .env file in the same directory as the Dockerfile.
 
 ##### docker run using .env file
 `docker run --env-file ./.env 501st-Bot:latest`
 
-The option is passing the envirnment variables by command line is also available. 
+The option is passing the environment variables by command line is also available. 
 Here is an example of passing all the environment variables. Any you don't wish to pass can simply be ommited from the command (including the -e flag that comes before the key/value pair)
 
 ##### docker run without .env file
