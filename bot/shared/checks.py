@@ -1,6 +1,6 @@
 # file with checks that can be used for commands
-
-from nextcord.ext import commands
+import nextcord
+from nextcord.ext import commands, application_checks
 from .constants import CLUB_SERVER_ID
 
 
@@ -10,3 +10,4 @@ def is_in_club_server():
         return ctx.guild.id == CLUB_SERVER_ID
 
     return commands.check(predicate)
+
