@@ -118,7 +118,7 @@ async def battery(ctx: commands.Context):
 
     # have all info, now we display it all
     battery_info: str = f"Battery remaining: {battery_percent}%\nBattery time remaining: {battery_time_left}\nPlugged in: {'Yes' if battery_plugged else 'No'}"
-    ctx.send(battery_info)
+    await ctx.send(battery_info)
 
 def secs_to_hours_and_mins(seconds: int) -> tuple[int, int]:
     """Converts seconds to hours and minutes."""
