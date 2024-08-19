@@ -167,7 +167,7 @@ async def refresh(interaction: nextcord.Interaction, cog_name: str):
 @bot.event
 async def on_command_error(ctx: commands.Context, error: commands.errors):
     # commandInvokeErrors should be caught by command error handlers
-    if isinstance(error, commands.CommandInvokeError):
+    if isinstance(error, commands.errors.CommandInvokeError):
         return
 
     if DEV:
@@ -175,6 +175,9 @@ async def on_command_error(ctx: commands.Context, error: commands.errors):
 
     if isinstance(error, commands.errors.CommandNotFound):
         await ctx.send("Command does not exist.")
+    
+    elif isinstance(error, commands.errors.NotOwner):
+        await ctx.send("You attempted to run an owner only command. You do not own this bot.")
     else:
         print(error)
 
