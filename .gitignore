@@ -11,7 +11,11 @@
 
 # ignore IDE
 /.idea
+/.vscode
 
 # ignore files generated during operation of bot
 /tmp
 *.csv
+
+# the ai model, too large to be pushed onto GitHub
+*.gguf

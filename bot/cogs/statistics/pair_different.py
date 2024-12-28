@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List
 import nextcord
 from nextcord.ext import commands
 import pandas as pd
@@ -82,7 +82,7 @@ class PairDifferent(commands.Cog):
     @commands.command(aliases=["is_pair_statistically_same", "ispairsame"])
     async def is_pair_same(self, ctx: commands.Context) -> None:
         """
-        Same as slash command is_pair_statistically_same.
+        Same as message command is_pair_statistically_same.
         A csv file attachment that has a header and 2 columns is required with the command.
         Will send a message if the pair of data are statistically the same or not.
         """
@@ -92,7 +92,7 @@ class PairDifferent(commands.Cog):
         if not PairDifferent.first_attachment_is_csv(message):
             raise FirstAttachmentNotCSVError
 
-        # do same as the slash command
+        # do same as the message command
 
         await message.attachments[0].save(PairDifferent.temp_file_path)
 

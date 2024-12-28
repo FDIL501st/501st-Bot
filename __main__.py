@@ -34,33 +34,33 @@ else:
 async def on_ready():
     print("Bot is ready.")
 
+COGS_DIR = "bot.cogs"
 
-# load the legacy cogs
-bot.load_extensions(
-    names=[
-        ".random_facts",
-        ".test"
-    ],
-    package="bot.cogs.legacy"
-)
+loaded_cogs: list[str] = []
 
 # load new cogs
-bot.load_extensions(
+loaded = bot.load_extensions(
     names=[
         ".basic",
-        ".calculator"
+        ".calculator",
     ],
-    package="bot.cogs"
+    package=COGS_DIR
 )
+loaded_cogs.extend(loaded)
+
+# load the legacy cogs
+loaded = bot.load_extensions_from_module(source_module=COGS_DIR+".legacy")
+loaded_cogs.extend(loaded)
 
 # load cogs from statistics
-bot.load_extensions(
-    names=[
-        ".pair_different"
-    ],
-    package="bot.cogs.statistics"
-)
+loaded = bot.load_extensions_from_module(source_module=COGS_DIR+".statistics")
+loaded_cogs.extend(loaded)
 
+# load cogs from gpt4all
+loaded = bot.load_extensions_from_module(source_module= COGS_DIR+".gpt4all")
+loaded_cogs.extend(loaded)
+
+print(loaded_cogs)
 
 @bot.command()
 @commands.is_owner()
@@ -82,12 +82,10 @@ async def unload(ctx: commands.Context, cog_name: str):
 
 @bot.command()
 @commands.is_owner()
-async def refresh(ctx: commands.Context, cog_name: str):
-    """Unloads, then loads the cog."""
-    load_command = bot.get_command("load")
-    unload_command = bot.get_command("unload")
-    await unload_command(ctx, cog_name)
-    await load_command(ctx, cog_name)
+async def reload(ctx: commands.Context, cog_name: str):
+    """Reloads a cog."""
+    bot.reload_extension(cog_name)
+    await ctx.send(f"{cog_name} reloaded.")
 
 
 @bot.command()
@@ -113,8 +111,9 @@ async def battery(ctx: commands.Context):
         battery_time_left = "Unlimited"
     else:
         # convert seconds to hours and minutes
-        hours, mins = secs_to_hours_and_mins(battery_secsleft)
-        battery_time_left = f"{hours}h {mins}m"
+        # hours, mins = secs_to_hours_and_mins(battery_secsleft)
+        # battery_time_left = f"{hours}h {mins}m"
+        battery_time_left = f"{battery_secsleft}s"
 
     # have all info, now we display it all
     battery_info: str = f"Battery remaining: {battery_percent}%\nBattery time remaining: {battery_time_left}\nPlugged in: {'Yes' if battery_plugged else 'No'}"
@@ -151,15 +150,16 @@ async def cog_errors(ctx: commands.Context, error: commands.errors):
         print(error)
 
 
-# slash command version of load, unload and refresh
+# slash command version of reload
 @bot.slash_command()
 @application_checks.is_owner()
 async def refresh(interaction: nextcord.Interaction, cog_name: str):
     """
-    Unloads, then loads a cog.
-    Slash command version of ./refresh
+    Reloads a cog.
+    Slash command version of ./reload
     """
-    await interaction.send("At this moment, the command does nothing.")
+    bot.reload_extension(cog_name)
+    await interaction.send(f"{cog_name} reloaded.")
 
 
 # command not found error handling
@@ -175,7 +175,6 @@ async def on_command_error(ctx: commands.Context, error: commands.errors):
 
     if isinstance(error, commands.errors.CommandNotFound):
         await ctx.send("Command does not exist.")
-    
     elif isinstance(error, commands.errors.NotOwner):
         await ctx.send("You attempted to run an owner only command. You do not own this bot.")
     else:

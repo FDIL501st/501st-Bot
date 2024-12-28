@@ -4,16 +4,33 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+aiohappyeyeballs = "*"
+aiohttp = "*"
+aiosignal = "*"
+attrs = "*"
+frozenlist = "*"
+idna = "*"
+multidict = "*"
 nextcord = "*"
-python-dotenv = "*"
+numpy = "*"
 pandas = "*"
+propcache = "*"
+psutil = "*"
+python-dateutil = "*"
+python-dotenv = "*"
+pytz = "*"
 scipy = "*"
+six = "*"
+typing-extensions = "*"
+tzdata = "*"
+yarl = "*"
+gpt4all = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.10"
+python_version = "3.12"
 
 [scripts]
-dev = "python3 ."
-test = "python3 tests/runner.py"
+start = "python ."
+test = "python tests/runner.py"
