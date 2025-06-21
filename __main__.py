@@ -16,12 +16,14 @@ intents.members = True
 load_dotenv(".env")
 
 DEV: bool = bool(os.environ.get("DEV", "False"))
-TOKEN: str = os.environ.get("TOKEN")
+TOKEN: str = os.environ.get("TOKEN", "")
+if TOKEN == "": 
+    print("TOKEN needs to be passed in ")
 SINGLE_SERVER: bool = bool(os.environ.get("SINGLE_SERVER", "False"))
+# SERVER_ID, used to quickly get club server set up with slash commands
+SERVER_ID: int = int(os.environ.get("GUILD_ID", 0))
 
-if SINGLE_SERVER:
-    # SERVER_ID, used to quickly get club server set up with slash commands
-    SERVER_ID: int = int(os.environ.get("GUILD_ID"))
+if SINGLE_SERVER and SERVER_ID != 0:
     # set for slash commands default server to register in the testing
     bot: commands.Bot = commands.Bot(command_prefix='./', intents=intents, default_guild_ids=[SERVER_ID])
 else:
@@ -96,7 +98,7 @@ async def battery(ctx: commands.Context):
 
     # unable to get battery information, can occur depending on the machine running the bot
     if not battery:
-        ctx.send("Battery information not available")
+        await ctx.send("Battery information not available")
         return
     
     battery_percent = battery.percent
@@ -129,7 +131,7 @@ def secs_to_hours_and_mins(seconds: int) -> tuple[int, int]:
 
 @load.error
 @unload.error
-async def cog_errors(ctx: commands.Context, error: commands.errors):
+async def cog_errors(ctx: commands.Context, error: nextcord.DiscordException):
     if not isinstance(error, commands.CommandInvokeError):
         return
 
@@ -165,7 +167,7 @@ async def refresh(interaction: nextcord.Interaction, cog_name: str):
 # command not found error handling
 # looking for when command_error event occurs in bot
 @bot.event
-async def on_command_error(ctx: commands.Context, error: commands.errors):
+async def on_command_error(ctx: commands.Context, error: commands.errors.CommandError):
     # commandInvokeErrors should be caught by command error handlers
     if isinstance(error, commands.errors.CommandInvokeError):
         return

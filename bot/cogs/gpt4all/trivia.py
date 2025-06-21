@@ -81,7 +81,7 @@ class Trivia(commands.Cog):
         """
         prompt: str = choice(prompts).format(topic=topic)
         with gpt_model.chat_session(system_prompt=TRIVIA_SYSTEM_PROMPT):
-            fact = gpt_model.generate(prompt=prompt)
+            fact = gpt_model.generate(prompt=prompt, max_tokens=100)
         return fact
     
     # need to define an error handling function for ai_fact 
