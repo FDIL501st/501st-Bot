@@ -45,15 +45,18 @@ class Conversation(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: nextcord.Message):
+        print("Conversation listener enter.")
         try:
             await self.handle_listener(message)
         except:
-            pass
+            print("Conversation listener error.")
 
     async def handle_listener(self, message: nextcord.Message):
         # Any message sent to just you(hidden messages) don't have a guild association
         # aka emphemeral message
+
         if message.guild is None:
+            print("No guild found")
             return # do nothing as was unable to find guild from message
         
         # can remove this if later if wanted, for now only occur within club server
@@ -67,11 +70,8 @@ class Conversation(commands.Cog):
             # and call send to it
 
             # debug messasge, check wat application id is
-            await message.reply(f"{self.bot.application_id=}")
             reply = await self.conversationBot.reply(message.content)
-            await message.reply(reply)
-
-
+            await message.channel.send(reply)
 
 
 
