@@ -34,9 +34,9 @@ class TestTtestRel(unittest.TestCase):
         # 0 < lo or 0 > hi
         # we are not testing both assertions unlike with 0 in between lo and hi
 
-        # we will do is fail the test if in between lo and hi
-        self.failIf(lo <= 0 <= hi,
-                    "Found that 0 is in range [lo, hi], though it shouldn't be for unrelated data.")
+        # what we will do is fail the test if in between lo and hi
+        if lo <= 0 <= hi:
+            self.fail("Found that 0 is in range [lo, hi], though it shouldn't be for unrelated data.")
 
 
 if __name__ == '__main__':
