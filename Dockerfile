@@ -7,7 +7,7 @@
 # Want to help us make this template better? Share your feedback here: https://forms.gle/ybq9Krt8jtBL3iCk7
 
 # debian based python image
-FROM python:3.12-slim-bookworm as base
+FROM python:3.12-slim-bookworm AS base
 
 # Prevents Python from writing pyc files.
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -63,4 +63,4 @@ RUN chmod -R 755 /app/tmp
 USER appuser
 
 # Run the application.
-CMD python3 .
+CMD ["python3", "."]
