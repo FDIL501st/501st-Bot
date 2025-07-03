@@ -145,8 +145,8 @@ class Legacy_Test(commands.Cog):
         """Simple command to test if the bot is online."""
         await ctx.send("Hello! The bot is indeed online right now.")
 
-    @commands.Cog.listener()
-    async def on_message(self, message):
+    @commands.Cog.listener('on_message')
+    async def hello_listener(self, message):
         try:
             if message.guild.id == CLUB_SERVER_ID:
                 # Any message sent to just you(hidden messages) don't have a guild association
