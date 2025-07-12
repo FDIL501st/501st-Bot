@@ -40,13 +40,13 @@ If you want to run the single container with docker run, then you will first nee
 
 You can run `docker images` to check if you already have the image. If the bot shows up, you can skip to running the bot.
 
-`docker build -t 501st-Bot:latest`
+`docker build -t 501st-Bot .`
 
 #### Run command
 As previously mentioned, you will need to at least pass `TOKEN` environment variable. Simpliest way is to have a .env file in the same directory as the Dockerfile.
 
 ##### docker run using .env file
-`docker run --env-file ./.env 501st-Bot:latest`
+`docker run --env-file ./.env 501st-Bot`
 
 The option is passing the environment variables by command line is also available. 
 Here is an example of passing all the environment variables. Any you don't wish to pass can simply be ommited from the command (including the -e flag that comes before the key/value pair)

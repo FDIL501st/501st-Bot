@@ -1,3 +1,4 @@
+import asyncio
 import threading
 import gpt4all
 import nextcord
@@ -59,7 +60,13 @@ class Conversation(commands.Cog):
             # and ignore command prefixes
             if message.guild.id == CLUB_SERVER_ID and message.author.id != BOT_ID and message.channel.id == CLUB_SERVER_BOT_CHANNEL and not message.content.startswith('./'):            
                 # for now need to use model to reply to message
-                reply = await self.conversationBot.reply(message.content)
+
+                async with message.channel.typing():
+                    reply, _ = await asyncio.gather(
+                        self.conversationBot.reply(message.content),
+                        asyncio.sleep(30)
+                    )
+                    # give bot 30s of think time
                 await message.channel.send(reply)
         except:
             print("Conversation listener error.")
