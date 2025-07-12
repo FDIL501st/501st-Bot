@@ -63,12 +63,14 @@ class Trivia(commands.Cog):
         """
         async with ctx.typing():
             fact_coroutine = self.generate_fact(topic=" ".join(topic))
-            # add a 60s sleep to force typing to keep happening
+            # add a 70s sleep to force typing to keep happening
             # average time it takes for generate_fact to complete
             # for some reason, generate_fact doesn't keep typing for the entire time, so manually do it with sleep
-            
-            await asyncio.sleep(60)
-            fact: str = await fact_coroutine
+            fact, _ = await asyncio.gather(
+                fact_coroutine,
+                asyncio.sleep(70)
+                )
+
             # other context managers or waits (like event.wait, or await) don't keep typing active
             # things like thread joins also don't work
             # sleep works, or a loop

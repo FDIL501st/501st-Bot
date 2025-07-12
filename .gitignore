@@ -1,6 +1,7 @@
 # enviroment variables
 .env
 .dev.env
+docker.env 
 
 # ignore pychache
 */__pycache__/
@@ -19,3 +20,6 @@
 
 # the ai model, too large to be pushed onto GitHub
 *.gguf
+
+# ignore run script
+docker-run.sh

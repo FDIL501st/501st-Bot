@@ -2,6 +2,8 @@ import nextcord
 from nextcord.ext import commands, application_checks
 from dotenv import load_dotenv
 import os
+import sys
+import asyncio
 import psutil
 from bot.shared.errors import *
 
@@ -19,6 +21,8 @@ DEV: bool = bool(os.environ.get("DEV", "False"))
 TOKEN: str = os.environ.get("TOKEN", "")
 if TOKEN == "": 
     print("TOKEN needs to be passed in ")
+    sys.exit(1)
+
 SINGLE_SERVER: bool = bool(os.environ.get("SINGLE_SERVER", "False"))
 # SERVER_ID, used to quickly get club server set up with slash commands
 SERVER_ID: int = int(os.environ.get("GUILD_ID", 0))
@@ -36,33 +40,6 @@ else:
 async def on_ready():
     print("Bot is ready.")
 
-COGS_DIR = "bot.cogs"
-
-loaded_cogs: list[str] = []
-
-# load new cogs
-loaded = bot.load_extensions(
-    names=[
-        ".basic",
-        ".calculator",
-    ],
-    package=COGS_DIR
-)
-loaded_cogs.extend(loaded)
-
-# load the legacy cogs
-loaded = bot.load_extensions_from_module(source_module=COGS_DIR+".legacy")
-loaded_cogs.extend(loaded)
-
-# load cogs from statistics
-loaded = bot.load_extensions_from_module(source_module=COGS_DIR+".statistics")
-loaded_cogs.extend(loaded)
-
-# load cogs from gpt4all
-loaded = bot.load_extensions_from_module(source_module= COGS_DIR+".gpt4all")
-loaded_cogs.extend(loaded)
-
-print(loaded_cogs)
 
 @bot.command()
 @commands.is_owner()
@@ -212,13 +189,45 @@ async def on_application_command_error(interaction: nextcord.Interaction, error:
     print(e)
 
 
-# About load and unload, name of class doesn't matter,
-# what matters is giving path to file that contains cog
-# and the file has a setup function
+async def main():
+    COGS_DIR = "bot.cogs"
 
-# Currently can't add cogs from within another cog.
+    loaded_cogs: list[str] = []
 
-# Also currently been unable to export commands from another file that isn't a cog,
-# aka another main file
+    # load new cogs
+    loaded = bot.load_extensions(
+        names=[
+            ".basic",
+            ".calculator",
+        ],
+        package=COGS_DIR
+    )
+    loaded_cogs.extend(loaded)
 
-bot.run(TOKEN)
+    # load the legacy cogs
+    loaded = bot.load_extensions_from_module(source_module=COGS_DIR+".legacy")
+    loaded_cogs.extend(loaded)
+
+    # load cogs from statistics
+    loaded = bot.load_extensions_from_module(source_module=COGS_DIR+".statistics")
+    loaded_cogs.extend(loaded)
+
+    # load cogs from gpt4all
+    loaded = bot.load_extensions_from_module(source_module= COGS_DIR+".gpt4all")
+    loaded_cogs.extend(loaded)
+
+    print(loaded_cogs)
+
+    # About load and unload, name of class doesn't matter,
+    # what matters is giving path to file that contains cog
+    # and the file has a setup function
+
+    # Currently can't add cogs from within another cog.
+
+    # Also currently been unable to export commands from another file that isn't a cog,
+    # aka another main file
+
+    await bot.start(TOKEN)
+
+if __name__ == "__main__":
+    asyncio.run(main())

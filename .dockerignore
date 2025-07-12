@@ -39,3 +39,8 @@ README.md
 **/.idea
 **/service
 **/tests
+
+# fdil added
+docker-run.sh
+
+*.gguf

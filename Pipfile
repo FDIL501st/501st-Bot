@@ -25,6 +25,7 @@ typing-extensions = "*"
 tzdata = "*"
 yarl = "*"
 gpt4all = "*"
+openlit = "*"
 
 [dev-packages]
 
