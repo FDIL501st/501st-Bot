@@ -22,4 +22,4 @@ docker.env
 *.gguf
 
 # ignore run script
-docker-run.sh
+run.sh

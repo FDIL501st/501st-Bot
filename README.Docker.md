@@ -46,10 +46,10 @@ You can run `docker images` to check if you already have the image. If the bot s
 As previously mentioned, you will need to at least pass `TOKEN` environment variable. Simpliest way is to have a .env file in the same directory as the Dockerfile.
 
 ##### docker run using .env file
-`docker run --env-file ./.env 501st-Bot`
+`docker run --env-file ./.env --name bot 501st-Bot`
 
 The option is passing the environment variables by command line is also available. 
 Here is an example of passing all the environment variables. Any you don't wish to pass can simply be ommited from the command (including the -e flag that comes before the key/value pair)
 
 ##### docker run without .env file
-`docker run -e TOKEN=BOT_TOKEN -e DEV=False -e SINGLE_SERVER=False -e GUILD_ID=111111111 501st-501st-Bot:latest`
+`docker run -e TOKEN=BOT_TOKEN -e DEV=False -e SINGLE_SERVER=False -e GUILD_ID=111111111 --name bot 501st-Bot`

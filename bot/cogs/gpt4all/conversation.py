@@ -1,19 +1,18 @@
 import asyncio
 import threading
-import gpt4all
 import nextcord
 from nextcord.ext import commands
 from bot.shared.constants import CLUB_SERVER_ID, BOT_ID, CLUB_SERVER_BOT_CHANNEL
-from bot.shared.model import gpt_model
-
+from bot.shared.model import my_gpt_model, MyGPT4All
 
 
 CONVERSATION_SYSTEM_PROMPT = """
 You are a friend that replies to whatever is said to you. 
+You will be referred to as bot.
 """
 
 class ConversationBot:
-    def __init__(self, model: gpt4all.GPT4All) -> None:
+    def __init__(self, model: MyGPT4All) -> None:
         self.model = model
         self._lock = threading.Lock()
 
@@ -26,8 +25,8 @@ class ConversationBot:
 
         if self._lock.acquire(blocking=False):
             try:
-                with gpt_model.chat_session(system_prompt=CONVERSATION_SYSTEM_PROMPT):
-                    reply = gpt_model.generate(prompt=message, max_tokens=100)  
+                with self.model.chat_session(system_prompt=CONVERSATION_SYSTEM_PROMPT):
+                    reply = self.model.generate(prompt=message, max_tokens=100)  
                 return reply
             finally:
                 # finally block runs before return in try
@@ -41,12 +40,11 @@ class Conversation(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         super().__init__()
         self.bot: commands.Bot = bot
-        self.conversationBot: ConversationBot = ConversationBot(gpt_model)
+        self.conversationBot: ConversationBot = ConversationBot(my_gpt_model)
 
 
     @commands.Cog.listener('on_message')
     async def handle_listener(self, message: nextcord.Message):
-        print("Conversation listener enter.")
         try:
             # Any message sent to just you(hidden messages) don't have a guild association
             # aka emphemeral message
@@ -59,6 +57,7 @@ class Conversation(commands.Cog):
             # and for now only in the club server bot channel
             # and ignore command prefixes
             if message.guild.id == CLUB_SERVER_ID and message.author.id != BOT_ID and message.channel.id == CLUB_SERVER_BOT_CHANNEL and not message.content.startswith('./'):            
+                print("Conversation listener enter.")
                 # for now need to use model to reply to message
 
                 async with message.channel.typing():
