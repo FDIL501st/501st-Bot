@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1
+# syntax=docker/dockerfile:1.7-labs
 
 # Comments are provided throughout this file to help you get started.
 # If you need more help, visit the Dockerfile reference guide at
@@ -40,8 +40,8 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     python -m pip install -r requirements.txt
 
 
-# Copy the source code into /app
-COPY . .
+# Copy the source code into /app, ignore the model, as will be binding that during docker run
+COPY --exclude=*.gguf --exclude=Pipefile* --exclude=requirements.txt --exclude=*.sh . .
 
 
 # add app/tmp as something the appuser can read and write from

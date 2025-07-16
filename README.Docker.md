@@ -43,13 +43,12 @@ You can run `docker images` to check if you already have the image. If the bot s
 `docker build -t 501st-Bot .`
 
 #### Run command
-As previously mentioned, you will need to at least pass `TOKEN` environment variable. Simpliest way is to have a .env file in the same directory as the Dockerfile.
-
-##### docker run using .env file
-`docker run --env-file ./.env --name bot 501st-Bot`
-
-The option is passing the environment variables by command line is also available. 
+As previously mentioned, you will need to at least pass `TOKEN` environment variable.
+ 
 Here is an example of passing all the environment variables. Any you don't wish to pass can simply be ommited from the command (including the -e flag that comes before the key/value pair)
 
 ##### docker run without .env file
 `docker run -e TOKEN=BOT_TOKEN -e DEV=False -e SINGLE_SERVER=False -e GUILD_ID=111111111 --name bot 501st-Bot`
+
+optionally add binding to a gpt4all model (not needed as first time run will have image download the model)
+`--mount=type=bind,source=gpt4all_model.gguf,target=/app/gpt4all_model.gguf`

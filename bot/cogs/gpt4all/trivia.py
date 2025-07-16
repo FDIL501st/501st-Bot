@@ -62,14 +62,14 @@ class Trivia(commands.Cog):
             topic (tuple[str]): The topic to generate a fact about. This is a required argument.
         """
         async with ctx.typing():
-            fact_coroutine = self.generate_fact(topic=" ".join(topic))
-            # add a 70s sleep to force typing to keep happening
+            fact_coroutine = asyncio.create_task(self.generate_fact(topic=" ".join(topic)))
+            # add a 60s sleep to force typing to keep happening
             # average time it takes for generate_fact to complete
             # for some reason, generate_fact doesn't keep typing for the entire time, so manually do it with sleep
-            fact, _ = await asyncio.gather(
-                fact_coroutine,
-                asyncio.sleep(70)
-                )
+            
+            await asyncio.sleep(60) # doesn't seem to work anymore?
+            
+            fact = await fact_coroutine
 
             # other context managers or waits (like event.wait, or await) don't keep typing active
             # things like thread joins also don't work
