@@ -40,7 +40,7 @@ If you want to run the single container with docker run, then you will first nee
 
 You can run `docker images` to check if you already have the image. If the bot shows up, you can skip to running the bot.
 
-`docker build -t 501st-Bot .`
+`docker build -t 501st-bot .`
 
 #### Run command
 As previously mentioned, you will need to at least pass `TOKEN` environment variable.

@@ -46,18 +46,15 @@ COPY --exclude=*.gguf --exclude=Pipefile* --exclude=requirements.txt --exclude=*
 
 # add app/tmp as something the appuser can read and write from
 # as we use that folder to write and read files used by the app
+# RUN mkdir /app/tmp 2>/dev/null
+# comment above as have not tested if above will work or not
 
-# Change ownership of the working directory to appuser
+# Change ownership of the directory to appuser
 RUN chown -R appuser /app/tmp
 
-# Grant read and write permissions to the appuser for the working directory
+# Grant read and write permissions to the appuser for the directory
 RUN chmod -R 755 /app/tmp
 # need read write permissions as application writes and read files within /app (program code)
-
-
-# Expose the port that the application listens on.
-# EXPOSE 8000
-# No need to expose a port as we don't need networking
 
 # Switch to the non-privileged user to run the application.
 USER appuser

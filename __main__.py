@@ -5,6 +5,7 @@ import os
 import sys
 import asyncio
 import psutil
+import openlit
 from bot.shared.errors import *
 
 # set intents, match ones set on discord
@@ -34,6 +35,7 @@ else:
     # set slash commands for all servers (this takes some hours to register)
     bot: commands.Bot = commands.Bot(command_prefix='./', intents=intents)
 
+OPENLIT_PORT: str = os.environ.get("OPENLIT_PORT", "4318")
 
 # print to terminal when Bot is ready
 @bot.event
@@ -227,7 +229,14 @@ async def main():
     # Also currently been unable to export commands from another file that isn't a cog,
     # aka another main file
 
+    # run the telemetry for the llm model
+    openlit.init(
+    otlp_endpoint=f"http://127.0.0.1:{OPENLIT_PORT}", 
+    )
+
     await bot.start(TOKEN)
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+
