@@ -149,6 +149,7 @@ class Legacy_Test(commands.Cog):
     async def hello_listener(self, message):
         try:
             if message.guild.id == CLUB_SERVER_ID:
+                print("Entered hello listener")
                 # Any message sent to just you(hidden messages) don't have a guild association
                 # aka emphemeral message
                 # Errors when bot sends a hidden message as message.guild = None
