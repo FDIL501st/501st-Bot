@@ -1,8 +1,5 @@
-from contextlib import contextmanager
-import re
-from typing import TypeAlias, override
+from typing import TypeAlias
 from os import PathLike
-import warnings
 from gpt4all import GPT4All
 
 # copied following from gpt4all.py file from my .venv

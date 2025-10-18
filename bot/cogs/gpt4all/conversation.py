@@ -18,7 +18,7 @@ SYSTEM_PROMPT_MESSAGE: MessageType = {"role": "system", "content": CONVERSATION_
 class ConversationBot:
     def __init__(self, model: MyGPT4All) -> None:
         self.model = model
-        self.history: deque[MessageType] = deque([SYSTEM_PROMPT_MESSAGE], maxlen=41)
+        self.history: deque[MessageType] = deque([SYSTEM_PROMPT_MESSAGE], maxlen=21)
         # first element at all times needs to be SYSTEM_PROMPT_MESSAGE
 
         # maxlen takes care of automatically removing from other side
@@ -99,6 +99,14 @@ class Conversation(commands.Cog):
                 print(e)
             print("Conversation listener error.")
 
+
+    @commands.command()
+    async def clear(self, _):
+        """
+        CLears bot history/context. Useful to start new conversations and fixing bot if it gets stuck saying same message.
+        """
+        self.conversationBot.history = deque([SYSTEM_PROMPT_MESSAGE], maxlen=21)
+        
 
 def setup(bot):
     bot.add_cog(Conversation(bot))
