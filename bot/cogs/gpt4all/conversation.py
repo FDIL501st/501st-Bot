@@ -57,6 +57,14 @@ class Conversation(commands.Cog):
         self.conversationBot: ConversationBot = ConversationBot(my_gpt_model)
 
 
+    @commands.command(alias=["clear_context"])
+    async def clear(self, ctx: commands.Context):
+        """
+        CLears bot history/context. Useful to start new conversations and fixing bot if it gets stuck saying same message.
+        """
+        self.conversationBot.history = deque([SYSTEM_PROMPT_MESSAGE], maxlen=21)
+
+
     @commands.Cog.listener('on_message')
     async def handle_listener(self, message: nextcord.Message):
         try:
@@ -99,13 +107,6 @@ class Conversation(commands.Cog):
                 print(e)
             print("Conversation listener error.")
 
-
-    @commands.command()
-    async def clear(self, _):
-        """
-        CLears bot history/context. Useful to start new conversations and fixing bot if it gets stuck saying same message.
-        """
-        self.conversationBot.history = deque([SYSTEM_PROMPT_MESSAGE], maxlen=21)
         
 
 def setup(bot):
