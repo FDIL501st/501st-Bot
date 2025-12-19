@@ -20,3 +20,7 @@ class MyGPT4All(GPT4All):
 
 # gpt_model equivalent of MyGPT4All class
 my_gpt_model: MyGPT4All = MyGPT4All("gpt4all-falcon-newbpe-q4_0.gguf", model_path="./", device="cpu")
+
+"""
+MyGPT4All is not used. Decided to make model variables within the file that uses them.
+"""

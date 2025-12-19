@@ -230,9 +230,9 @@ async def main():
     # aka another main file
 
     # run the telemetry for the llm model
-    openlit.init(
-    otlp_endpoint=f"http://127.0.0.1:{OPENLIT_PORT}", 
-    )
+    #openlit.init(
+    #otlp_endpoint=f"http://127.0.0.1:{OPENLIT_PORT}", 
+    #)
 
     await bot.start(TOKEN)
 

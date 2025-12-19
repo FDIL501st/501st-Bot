@@ -3,20 +3,24 @@ import os
 import threading
 import nextcord
 from nextcord.ext import commands
+from gpt4all import GPT4All
 from bot.shared.constants import CLUB_SERVER_ID, BOT_ID, CLUB_SERVER_BOT_CHANNEL
-from bot.shared.model import my_gpt_model, MyGPT4All, MessageType
+from bot.shared.model import MessageType
 from collections import deque
 
 DEV: bool = bool(os.environ.get("DEV", "False"))
 
 CONVERSATION_SYSTEM_PROMPT = """
-You are a friend that replies to whatever is said to you. Your name is bot.
+You are a helpful Assistant.
 """
 
 SYSTEM_PROMPT_MESSAGE: MessageType = {"role": "system", "content": CONVERSATION_SYSTEM_PROMPT}
 
+# path ./ is relative to where __main__ is
+my_gpt_model: GPT4All = GPT4All("deepseek-llm-7b-chat.Q4_K_M.gguf", model_path="./", device="cpu")
+
 class ConversationBot:
-    def __init__(self, model: MyGPT4All) -> None:
+    def __init__(self, model: GPT4All) -> None:
         self.model = model
         self.history: deque[MessageType] = deque([SYSTEM_PROMPT_MESSAGE], maxlen=21)
         # first element at all times needs to be SYSTEM_PROMPT_MESSAGE
@@ -57,13 +61,20 @@ class Conversation(commands.Cog):
         self.conversationBot: ConversationBot = ConversationBot(my_gpt_model)
 
 
-    @commands.command(alias=["clear_context"])
-    async def clear(self, ctx: commands.Context):
+    @commands.command(alias=["clear_context", "clear_history"])
+    async def clear(self, _ctx: commands.Context):
         """
-        CLears bot history/context. Useful to start new conversations and fixing bot if it gets stuck saying same message.
+        Clears bot history/context. Useful to start new conversations and fixing bot if it gets stuck saying same message.
         """
         self.conversationBot.history = deque([SYSTEM_PROMPT_MESSAGE], maxlen=21)
+        await ctx.send("Cleared bot chat history.")
 
+    @commands.command(alias=["view_context", "view_history"])
+    async def history(self, ctx: commands.Context):
+        """
+        View the history/context for the bot
+        """
+        await ctx.send(self.conversationBot.history)
 
     @commands.Cog.listener('on_message')
     async def handle_listener(self, message: nextcord.Message):
