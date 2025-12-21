@@ -62,7 +62,7 @@ class Conversation(commands.Cog):
 
 
     @commands.command(alias=["clear_context", "clear_history"])
-    async def clear(self, _ctx: commands.Context):
+    async def clear(self, ctx: commands.Context):
         """
         Clears bot history/context. Useful to start new conversations and fixing bot if it gets stuck saying same message.
         """
