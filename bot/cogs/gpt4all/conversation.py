@@ -7,6 +7,7 @@ from gpt4all import GPT4All
 from bot.shared.constants import CLUB_SERVER_ID, BOT_ID, CLUB_SERVER_BOT_CHANNEL
 from bot.shared.model import MessageType
 from collections import deque
+from pprint import pformat
 
 DEV: bool = bool(os.environ.get("DEV", "False"))
 
@@ -74,7 +75,7 @@ class Conversation(commands.Cog):
         """
         View the history/context for the bot
         """
-        await ctx.send(self.conversationBot.history)
+        await ctx.send(pformat(self.conversationBot.history))
 
     @commands.Cog.listener('on_message')
     async def handle_listener(self, message: nextcord.Message):
