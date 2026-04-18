@@ -5,7 +5,6 @@ import os
 import sys
 import asyncio
 import psutil
-import openlit
 from bot.shared.errors import *
 
 # set intents, match ones set on discord

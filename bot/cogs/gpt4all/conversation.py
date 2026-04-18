@@ -3,11 +3,12 @@ import os
 import threading
 import nextcord
 from nextcord.ext import commands
-from gpt4all import GPT4All
 from bot.shared.constants import CLUB_SERVER_ID, BOT_ID, CLUB_SERVER_BOT_CHANNEL
 from bot.shared.model import MessageType
 from collections import deque
 from pprint import pformat
+from llama_cpp import Llama
+
 
 DEV: bool = bool(os.environ.get("DEV", "False"))
 
@@ -20,10 +21,10 @@ You are permitted to talk about your true nature as a LLM.
 SYSTEM_PROMPT_MESSAGE: MessageType = {"role": "system", "content": CONVERSATION_SYSTEM_PROMPT}
 
 # path ./ is relative to where __main__ is
-my_gpt_model: GPT4All = GPT4All("ggemma-4-E2B-it-UD-Q4_K_XL.gguf", model_path="./", device="cpu")
+llm = Llama(model_path="gemma-4-E2B-it-UD-Q4_K_XL.gguf", verbose=False, n_ctx=2048)
 
 class ConversationBot:
-    def __init__(self, model: GPT4All) -> None:
+    def __init__(self, model: Llama) -> None:
         self.model = model
         self.history: deque[MessageType] = deque([SYSTEM_PROMPT_MESSAGE], maxlen=21)
         # first element at all times needs to be SYSTEM_PROMPT_MESSAGE
@@ -37,18 +38,22 @@ class ConversationBot:
 
     def reply(self, message: str) -> str:
         """
-        Generates a reply to the message, using a gpt4all model.
+        Generates a reply to the message, using a llm model.
         If already busy generating, ignore the request by sending a RuntimeError.
         Will not queue for the model.
+
+        This functional also handles history, meaning it will add the user prompt and response generated to the history.
         """
 
         if self._lock.acquire(blocking=False):
             try:
-                with self.model.chat_session(system_prompt=CONVERSATION_SYSTEM_PROMPT):
-                    # manually set model history
-                    self.model._history = list(self.history)
-                    reply = self.model.generate(prompt=message, max_tokens=200, temperature=1.0, top_p=0.95, top_k=0.64)  
-                return reply
+                # add message to history
+                self.history.append({"role": "user", "content": message})
+                reply = llm.create_chat_completion(messages = self.history, max_tokens=200, temperature=1.0, top_p=0.95, top_k=64)
+                # add reply to history as well
+                self.history.append(reply["choices"][0]["message"])
+
+                return reply["choices"][0]["message"]["content"]
             finally:
                 # finally block runs before return in try
                 self._lock.release()
@@ -61,7 +66,7 @@ class Conversation(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         super().__init__()
         self.bot: commands.Bot = bot
-        self.conversationBot: ConversationBot = ConversationBot(my_gpt_model)
+        self.conversationBot: ConversationBot = ConversationBot(llm)
 
 
     @commands.command(alias=["clear_context", "clear_history"])
@@ -93,7 +98,6 @@ class Conversation(commands.Cog):
             # and for now only in the club server bot channel
             # and ignore command prefixes
             if message.guild.id == CLUB_SERVER_ID and message.author.id != BOT_ID and message.channel.id == CLUB_SERVER_BOT_CHANNEL and not message.content.startswith('./'):            
-                print("Conversation listener enter.")
                 print(f"{self.conversationBot.history}")
 
                 # for now need to use model to reply to message
@@ -105,11 +109,9 @@ class Conversation(commands.Cog):
 
                     reply = await reply_coro
                 
-                    # add message and reply to history
-                    self.conversationBot.history.append({"role": "user", "content": message.content})
-                    self.conversationBot.history.append({"role": "assistant", "content": reply})
+                    # reply_coro takes care of adding the promp and resopnse to its history
 
-                    # add system_prompt to front again (it was removed if our deque reached its max capacity)
+                    # add system_prompt to front again (it wcould be removed if our deque reached its max capacity)
                     self.conversationBot.history.popleft()
                     self.conversationBot.history.appendleft(SYSTEM_PROMPT_MESSAGE)
                     

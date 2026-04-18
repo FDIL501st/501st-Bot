@@ -2,8 +2,7 @@ import asyncio
 import nextcord
 from nextcord.ext import commands
 from random import choice
-from bot.shared.model import gpt_model
-
+from llama_cpp import Llama
 
 prompts: list[str] = [
     "Give me a fact about {topic}.",
@@ -25,12 +24,19 @@ Avoid repeating the same fact and try to provide a variety of information.
 Also try to keep your responses short.
 """
 
+
+llm = Llama(model_path="gemma-4-E2B-it-UD-Q4_K_XL.gguf", verbose=False)
+
+
 class Trivia(commands.Cog):
     """
     The trivia giver commands.
     """
     def __init__(self, bot: commands.Bot):
         self.bot: commands.Bot = bot
+        self.messages = [
+            {"role": "system", "content": TRIVIA_SYSTEM_PROMPT }
+        ]
 
     @nextcord.slash_command()
     async def fact(self, interaction: nextcord.Interaction, topic: str):
@@ -79,12 +85,12 @@ class Trivia(commands.Cog):
 
     async def generate_fact(self, topic: str) -> str:
         """
-        Generates a fact about a topic, using a gpt4all model.
+        Generates a fact about a topic, using a llm model.
         """
         prompt: str = choice(prompts).format(topic=topic)
-        with gpt_model.chat_session(system_prompt=TRIVIA_SYSTEM_PROMPT):
-            fact = gpt_model.generate(prompt=prompt)
-        return fact
+        self.messages.append({"role": "user", "content": prompt})
+        response = llm.create_chat_completion(messages = self.messages, temperature=1.0, top_p=0.95, top_k=64)
+        return response["choices"][0]["message"]["content"]
     
     # need to define an error handling function for ai_fact 
     # In on_command_error, caught exception of type: <class 'nextcord.ext.commands.errors.MissingRequiredArgument'>
