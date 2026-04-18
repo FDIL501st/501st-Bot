@@ -12,7 +12,9 @@ from pprint import pformat
 DEV: bool = bool(os.environ.get("DEV", "False"))
 
 CONVERSATION_SYSTEM_PROMPT = """
-You are a helpful Assistant.
+You are a helpful Assistant. Your name is BB-501.
+All your responses will be within 100 words.
+You are permitted to talk about your true nature as a LLM.
 """
 
 SYSTEM_PROMPT_MESSAGE: MessageType = {"role": "system", "content": CONVERSATION_SYSTEM_PROMPT}
@@ -45,7 +47,7 @@ class ConversationBot:
                 with self.model.chat_session(system_prompt=CONVERSATION_SYSTEM_PROMPT):
                     # manually set model history
                     self.model._history = list(self.history)
-                    reply = self.model.generate(prompt=message, max_tokens=100)  
+                    reply = self.model.generate(prompt=message, max_tokens=200, temperature=1.0, top_p=0.95, top_k=0.64)  
                 return reply
             finally:
                 # finally block runs before return in try
