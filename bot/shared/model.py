@@ -8,7 +8,7 @@ DEFAULT_PROMPT_TEMPLATE = "### Human:\n{0}\n\n### Assistant:\n"
 MessageType: TypeAlias = 'dict[str, str]'
 
 
-gpt_model: GPT4All = GPT4All("gpt4all-falcon-newbpe-q4_0.gguf", model_path="./", device="cpu")
+gpt_model: GPT4All = GPT4All("gemma-4-E2B-it-UD-Q4_K_XL.gguf", model_path="./", device="cpu")
 
 class MyGPT4All(GPT4All):
     """A child class to overwrite the chat_session context manager to include history."""
@@ -19,7 +19,7 @@ class MyGPT4All(GPT4All):
 
 
 # gpt_model equivalent of MyGPT4All class
-my_gpt_model: MyGPT4All = MyGPT4All("gpt4all-falcon-newbpe-q4_0.gguf", model_path="./", device="cpu")
+my_gpt_model: MyGPT4All = MyGPT4All("gemma-4-E2B-it-UD-Q4_K_XL.gguf", model_path="./", device="cpu")
 
 """
 MyGPT4All is not used. Decided to make model variables within the file that uses them.

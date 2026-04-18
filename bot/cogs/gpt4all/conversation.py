@@ -18,7 +18,7 @@ You are a helpful Assistant.
 SYSTEM_PROMPT_MESSAGE: MessageType = {"role": "system", "content": CONVERSATION_SYSTEM_PROMPT}
 
 # path ./ is relative to where __main__ is
-my_gpt_model: GPT4All = GPT4All("deepseek-llm-7b-chat.Q4_K_M.gguf", model_path="./", device="cpu")
+my_gpt_model: GPT4All = GPT4All("ggemma-4-E2B-it-UD-Q4_K_XL.gguf", model_path="./", device="cpu")
 
 class ConversationBot:
     def __init__(self, model: GPT4All) -> None:
