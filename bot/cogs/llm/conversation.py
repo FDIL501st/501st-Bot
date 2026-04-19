@@ -8,6 +8,7 @@ from bot.shared.model import MessageType
 from collections import deque
 from pprint import pformat
 from llama_cpp import Llama
+from bot.shared.model import llm
 
 
 DEV: bool = bool(os.environ.get("DEV", "False"))
@@ -21,7 +22,7 @@ You are permitted to talk about your true nature as a LLM.
 SYSTEM_PROMPT_MESSAGE: MessageType = {"role": "system", "content": CONVERSATION_SYSTEM_PROMPT}
 
 # path ./ is relative to where __main__ is
-llm = Llama(model_path="gemma-4-E2B-it-UD-Q4_K_XL.gguf", verbose=False, n_ctx=2048)
+# llm = Llama(model_path="gemma-4-E2B-it-UD-Q4_K_XL.gguf", verbose=False, n_ctx=2048)
 
 class ConversationBot:
     def __init__(self, model: Llama) -> None:
@@ -49,7 +50,7 @@ class ConversationBot:
             try:
                 # add message to history
                 self.history.append({"role": "user", "content": message})
-                reply = llm.create_chat_completion(messages = self.history, max_tokens=200, temperature=1.0, top_p=0.95, top_k=64)
+                reply = llm.create_chat_completion(messages = list(self.history), max_tokens=200, temperature=1.0, top_p=0.95, top_k=64)
                 # add reply to history as well
                 self.history.append(reply["choices"][0]["message"])
 

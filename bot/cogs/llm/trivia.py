@@ -3,6 +3,7 @@ import nextcord
 from nextcord.ext import commands
 from random import choice
 from llama_cpp import Llama
+from bot.shared.model import llm
 
 prompts: list[str] = [
     "Give me a fact about {topic}.",
@@ -25,7 +26,7 @@ Also try to keep your responses short.
 """
 
 
-llm = Llama(model_path="gemma-4-E2B-it-UD-Q4_K_XL.gguf", verbose=False)
+# llm = Llama(model_path="gemma-4-E2B-it-UD-Q4_K_XL.gguf", verbose=False)
 
 
 class Trivia(commands.Cog):
@@ -34,9 +35,9 @@ class Trivia(commands.Cog):
     """
     def __init__(self, bot: commands.Bot):
         self.bot: commands.Bot = bot
-        self.messages = [
-            {"role": "system", "content": TRIVIA_SYSTEM_PROMPT }
-        ]
+        # self.messages = [
+        #     {"role": "system", "content": TRIVIA_SYSTEM_PROMPT }
+        # ]
 
     @nextcord.slash_command()
     async def fact(self, interaction: nextcord.Interaction, topic: str):
@@ -88,8 +89,11 @@ class Trivia(commands.Cog):
         Generates a fact about a topic, using a llm model.
         """
         prompt: str = choice(prompts).format(topic=topic)
-        self.messages.append({"role": "user", "content": prompt})
-        response = llm.create_chat_completion(messages = self.messages, temperature=1.0, top_p=0.95, top_k=64)
+        messages = [
+            {"role": "system", "content": TRIVIA_SYSTEM_PROMPT }
+        ]
+        messages.append({"role": "user", "content": prompt})
+        response = llm.create_chat_completion(messages = messages, temperature=1.0, top_p=0.95, top_k=64)
         return response["choices"][0]["message"]["content"]
     
     # need to define an error handling function for ai_fact 

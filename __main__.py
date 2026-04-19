@@ -34,7 +34,7 @@ else:
     # set slash commands for all servers (this takes some hours to register)
     bot: commands.Bot = commands.Bot(command_prefix='./', intents=intents)
 
-OPENLIT_PORT: str = os.environ.get("OPENLIT_PORT", "4318")
+# OPENLIT_PORT: str = os.environ.get("OPENLIT_PORT", "4318")
 
 # print to terminal when Bot is ready
 @bot.event
@@ -192,7 +192,7 @@ async def on_application_command_error(interaction: nextcord.Interaction, error:
 
 async def main():
     COGS_DIR = "bot.cogs"
-
+    SHARED_DIR = "bot.shared"
     loaded_cogs: list[str] = []
 
     # load new cogs
@@ -200,22 +200,27 @@ async def main():
         names=[
             ".basic",
             ".calculator",
+            ".legacy.random_facts",
+            ".legacy.test",
+            ".statistics.pair_different",
+            ".llm.conversation",
+            ".llm.trivia"
         ],
         package=COGS_DIR
     )
     loaded_cogs.extend(loaded)
 
-    # load the legacy cogs
-    loaded = bot.load_extensions_from_module(source_module=COGS_DIR+".legacy")
-    loaded_cogs.extend(loaded)
-
-    # load cogs from statistics
-    loaded = bot.load_extensions_from_module(source_module=COGS_DIR+".statistics")
-    loaded_cogs.extend(loaded)
-
-    # load cogs from gpt4all
-    loaded = bot.load_extensions_from_module(source_module= COGS_DIR+".gpt4all")
-    loaded_cogs.extend(loaded)
+    # load shared files needed by cogs
+    # loaded_shared = bot.load_extensions(
+    #     names=[
+    #         # ".checks",
+    #         # ".constants",
+    #         # ".errors",
+    #         ".models"
+    #     ],
+    #     package=SHARED_DIR
+    # )
+    # loaded_cogs.extend(loaded_shared)
 
     print(loaded_cogs)
 
