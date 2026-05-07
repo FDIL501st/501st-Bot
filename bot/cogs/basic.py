@@ -34,12 +34,15 @@ class Basic(commands.Cog):
         # the word we are listening for
         word: str = "Zbeub"
 
+        if message.guild is None:
+            return # nothing we can do
+
         if message.guild.id == CLUB_SERVER_ID and message.content == word:
             channel = message.guild.get_channel(message.channel.id)
             # Don't use bot.get_channel(), won't find the channel
             # message.guild gets guild the message is from, guild has method get_channel()
             await channel.send(
-                "I don't know what {0} means, but someone said it in the club server.".format(word)
+                "I don't know what {0} means, but someone said just said it.".format(word)
             )
 
 

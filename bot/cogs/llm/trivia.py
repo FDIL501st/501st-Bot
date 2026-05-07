@@ -93,8 +93,8 @@ class Trivia(commands.Cog):
             {"role": "system", "content": TRIVIA_SYSTEM_PROMPT }
         ]
         messages.append({"role": "user", "content": prompt})
-        response = llm.create_chat_completion(messages = messages, temperature=1.0, top_p=0.95, top_k=64)
-        return response["choices"][0]["message"]["content"]
+        response = llm.create_chat_completion(messages = messages, temperature=1.0, top_p=0.95, top_k=64) # type: ignore
+        return response["choices"][0]["message"]["content"] # type: ignore
     
     # need to define an error handling function for ai_fact 
     # In on_command_error, caught exception of type: <class 'nextcord.ext.commands.errors.MissingRequiredArgument'>

@@ -16,7 +16,6 @@ DEV: bool = bool(os.environ.get("DEV", "False"))
 CONVERSATION_SYSTEM_PROMPT = """
 You are a helpful Assistant. Your name is BB-501.
 All your responses will be within 100 words.
-You are permitted to talk about your true nature as a LLM.
 """
 
 SYSTEM_PROMPT_MESSAGE: MessageType = {"role": "system", "content": CONVERSATION_SYSTEM_PROMPT}
@@ -50,11 +49,11 @@ class ConversationBot:
             try:
                 # add message to history
                 self.history.append({"role": "user", "content": message})
-                reply = llm.create_chat_completion(messages = list(self.history), max_tokens=200, temperature=1.0, top_p=0.95, top_k=64)
+                reply = llm.create_chat_completion(messages = list(self.history), max_tokens=200, temperature=1.0, top_p=0.95, top_k=64) # type: ignore
                 # add reply to history as well
-                self.history.append(reply["choices"][0]["message"])
+                self.history.append(reply["choices"][0]["message"]) # type: ignore
 
-                return reply["choices"][0]["message"]["content"]
+                return reply["choices"][0]["message"]["content"] # type: ignore
             finally:
                 # finally block runs before return in try
                 self._lock.release()
